@@ -1,12 +1,17 @@
 package isi.dan.msclientes.model;
 
 import java.math.BigDecimal;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -33,7 +38,45 @@ public class Cliente {
     private String cuit;
 
     @Column(name="MAXIMO_DESCUBIERTO")
-    @Min(value = 10000, message = "El descubierto maximo debe ser al menos 10000")
+    @Min(value = 0, message = "El descubierto maximo debe ser mayor a 0")
     private BigDecimal maximoDescubierto;
+
+    @OneToMany(mappedBy="cliente")
+    private Set<Obra> obras;
+
+    @OneToMany(mappedBy="cliente")
+    private Set<Usuario> usuarios;
+
+    @Autowired
+    private transient BigDecimal maximoDescubiertoDefault;
+
+    @PrePersist
+    protected void onCreate() {
+        if (maximoDescubierto == null) {
+            maximoDescubierto = maximoDescubiertoDefault;
+        }
+    }
+    
+    // Métodos convenientes para agregar y remover usuarios
+    public void addUsuario(Usuario usuario) {
+        usuarios.add(usuario);
+        usuario.setCliente(this);
+    }
+    
+    public void removeUsuario(Usuario usuario) {
+        usuarios.remove(usuario);
+        usuario.setCliente(null);
+    }
+
+    // Métodos convenientes para agregar y remover obras
+    public void addObra(Obra obra) {
+        obras.add(obra);
+        obra.setCliente(this);
+    }
+    
+    public void removeObra(Obra obra) {
+        obras.remove(obra);
+        obra.setCliente(null);
+    }
     
 }

@@ -1,49 +1,47 @@
 package isi.dan.msclientes.model;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
-import isi.dan.msclientes.enums.EstadoObra;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Entity
-@Table(name = "MS_CLI_OBRA")
+@Table(name = "MS_CLI_USUARIO")
 @Data
-public class Obra {
-
+public class Usuario {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
-    private String direccion;
+    @NotBlank(message = "El nombre es obligatorio")
+    private String nombre;
 
-    @Column(name = "ES_REMODELACION")
-    private Boolean esRemodelacion;
+    @NotBlank(message = "El apellido es obligatorio")
+    private String apellido;
+
+    @Column(name="CORREO_ELECTRONICO")
+    @Email(message = "Email debe ser valido")
+    @NotBlank(message = "Email es obligatorio")
+    private String correoElectronico;
     
-    private float lat;
-    
-    private float lng;
-    
+    @NotBlank(message = "DNI es obligatorio")
+    private String dni;
+
     @ManyToOne
     @JoinColumn(name = "ID_CLIENTE")
     private Cliente cliente;
     
-    @NotNull(message = "El presupuesto es obligatorio")
-    @Min(value=100, message = "El presupuesto debe ser al menos de 100")
-    private BigDecimal presupuesto;
-
-    @Enumerated(EnumType.STRING)
-    private EstadoObra estado;
-
 }
